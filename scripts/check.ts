@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict'
 import { countLineSyllables, countSyllables } from '../src/lib/syllables.ts'
 import { parseYouTubeId } from '../src/lib/youtube.ts'
-import { endRhymeKeys, rhymeKey } from '../src/lib/rhymes.ts'
+import { endRhymeGroups, rhymeKey } from '../src/lib/rhymes.ts'
 
 const words: Record<string, number> = {
   the: 1, night: 1, wrote: 1, floats: 1, notes: 1, through: 1, "I'm": 1,
@@ -39,7 +39,11 @@ const notRhymes: [string, string][] = [['night', 'day'], ['cat', 'cut'], ['wrote
 for (const [a, b] of rhymes) assert.equal(rhymeKey(a), rhymeKey(b), `${a}/${b}`)
 for (const [a, b] of notRhymes) assert.notEqual(rhymeKey(a), rhymeKey(b), `${a}/${b}`)
 assert.equal(rhymeKey(''), '')
-const keys = endRhymeKeys(['Driving through the night', 'Chasing every twilight,', 'Not impressing anything', ''])
-assert.equal(keys.size, 1)
-assert.ok(keys.has(rhymeKey('night')))
+const groups = endRhymeGroups([
+  'Sitting here at night', 'I lost the chain', 'Nothing feels right', 'Driving down the lane', 'This line ends alone', '',
+])
+assert.equal(groups.size, 2)
+assert.equal(groups.get(rhymeKey('night')), 0) // first group to appear
+assert.equal(groups.get(rhymeKey('chain')), 1)
+assert.equal(groups.has(rhymeKey('alone')), false)
 console.log('rhymes: ok')

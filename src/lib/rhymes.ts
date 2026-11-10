@@ -35,12 +35,14 @@ export function splitLastWord(line: string): { before: string; word: string; aft
   return m ? { before: m[1], word: m[2], after: m[3] } : null
 }
 
-// Keys shared by the last word of two or more lines.
-export function endRhymeKeys(lines: string[]): Set<string> {
+// Rhyme groups among line endings: key -> group number (0, 1, 2…), numbered in the
+// order each group first appears, so adding lines further down never recolors earlier ones.
+// Only keys shared by two or more lines count as a group.
+export function endRhymeGroups(lines: string[]): Map<string, number> {
+  const keys = lines.map((line) => rhymeKey(splitLastWord(line)?.word ?? ''))
   const counts = new Map<string, number>()
-  for (const line of lines) {
-    const key = rhymeKey(splitLastWord(line)?.word ?? '')
-    if (key) counts.set(key, (counts.get(key) ?? 0) + 1)
-  }
-  return new Set([...counts].filter(([, n]) => n > 1).map(([k]) => k))
+  for (const key of keys) if (key) counts.set(key, (counts.get(key) ?? 0) + 1)
+  const groups = new Map<string, number>()
+  for (const key of keys) if (key && counts.get(key)! > 1 && !groups.has(key)) groups.set(key, groups.size)
+  return groups
 }

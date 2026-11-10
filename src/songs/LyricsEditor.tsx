@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import type { MouseEvent, ReactNode } from 'react'
 import { countLineSyllables } from '../lib/syllables'
-import { endRhymeKeys, rhymeKey, splitLastWord } from '../lib/rhymes'
+import { endRhymeGroups, rhymeKey, splitLastWord } from '../lib/rhymes'
 import { RecordMode } from './RecordMode'
 import { useAutosave } from '../hooks/useAutosave'
 import { RhymePopup } from './RhymePopup'
@@ -61,6 +61,10 @@ function readStoredFontSize(): number {
   }
   return DEFAULT_FONT_SIZE
 }
+
+// One color per rhyme group, in order of appearance (cycles after 8). Soft tones that
+// read on the dark lyrics surface; the first group uses the Hush accent blue.
+const RHYME_COLORS = ['#7b86ff', '#e5c07b', '#6fc3b8', '#e88ea8', '#a6d189', '#c39bf0', '#ef9f76', '#8fc7f0']
 
 const SYLLABLES_KEY = 'hush:show-syllables'
 
@@ -165,7 +169,7 @@ export function LyricsEditor({ title, content, onContentChange, onSave, aside }:
   const textPadding = `px-4 py-4 ${showSyllables ? 'pr-12' : ''}`
   const lineHeight = `${fontSize * 1.625}px`
   const lines = content.split('\n')
-  const rhymingKeys = endRhymeKeys(lines)
+  const rhymeGroups = endRhymeGroups(lines)
 
   return (
     <div>
@@ -227,13 +231,13 @@ export function LyricsEditor({ title, content, onContentChange, onSave, aside }:
           >
             {lines.map((line, i) => {
               const last = splitLastWord(line)
-              const rhymes = last && rhymingKeys.has(rhymeKey(last.word))
+              const group = last ? rhymeGroups.get(rhymeKey(last.word)) : undefined
               return (
                 <div key={i} className="relative">
-                  {rhymes ? (
+                  {last && group !== undefined ? (
                     <>
                       {last.before}
-                      <span className="text-accent">{last.word}</span>
+                      <span style={{ color: RHYME_COLORS[group % RHYME_COLORS.length] }}>{last.word}</span>
                       {last.after}
                     </>
                   ) : (
