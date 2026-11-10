@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100dvh;
+  background-color: #05060f;
+  background-image:
+    radial-gradient(ellipse 900px 550px at 8% -8%, rgba(217, 70, 239, 0.32), transparent 60%),
+    radial-gradient(ellipse 700px 550px at 100% 0%, rgba(99, 102, 241, 0.26), transparent 60%),
+    radial-gradient(ellipse 900px 700px at 10% 100%, rgba(34, 211, 238, 0.14), transparent 60%),
+    radial-gradient(ellipse 700px 600px at 100% 100%, rgba(232, 121, 249, 0.16), transparent 55%);
+  background-repeat: no-repeat;
+}
+
+/* Frosted-glass chrome: panels, cards, headers. Content sits on top, so no border here —
+   apply border-white/10 (or similar) alongside for full control over hover states. */
+@utility glass {
+  background-color: rgb(255 255 255 / 0.055);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+}
+
+/* Same, but brighter/more opaque — for modals and popovers that float above other glass. */
+@utility glass-strong {
+  background-color: rgb(255 255 255 / 0.09);
+  backdrop-filter: blur(28px) saturate(150%);
+  -webkit-backdrop-filter: blur(28px) saturate(150%);
+}
+
+/* Higher-opacity dark glass for the main writing surface — keeps text contrast high while
+   still reading as glass (frosted edge, soft border) instead of a flat opaque box. */
+@utility glass-surface {
+  background-color: rgb(8 10 22 / 0.7);
+  backdrop-filter: blur(28px) saturate(130%);
+  -webkit-backdrop-filter: blur(28px) saturate(130%);
+}
+
+/* Form controls: inputs, selects. */
+@utility glass-input {
+  background-color: rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Near-opaque glass for floating menus that sit over busy content (dropdown suggestion
+   lists, popovers) — glass-strong's translucency reads as "see-through" once there's
+   colorful UI directly behind it, so these get just enough frost to still feel like glass. */
+@utility glass-solid {
+  background-color: rgb(8 10 22 / 0.94);
+  backdrop-filter: blur(24px) saturate(130%);
+  -webkit-backdrop-filter: blur(24px) saturate(130%);
+}
