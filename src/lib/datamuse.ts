@@ -17,11 +17,15 @@ export function normalizeWord(raw: string): string {
   return raw.toLowerCase().replace(/^[^a-z']+|[^a-z']+$/gi, '')
 }
 
-async function fetchWords(param: string, word: string): Promise<DatamuseWord[]> {
+// Returns null on a network/server failure, so failures aren't cached as "no rhymes".
+async function fetchWords(param: string, word: string): Promise<DatamuseWord[] | null> {
   const url = `https://api.datamuse.com/words?${param}=${encodeURIComponent(word)}&max=20`
-  const res = await fetch(url)
-  if (!res.ok) return []
-  return res.json()
+  try {
+    const res = await fetch(url)
+    return res.ok ? await res.json() : null
+  } catch {
+    return null
+  }
 }
 
 export async function getSuggestions(rawWord: string): Promise<RhymeSuggestions> {
@@ -37,7 +41,7 @@ export async function getSuggestions(rawWord: string): Promise<RhymeSuggestions>
     fetchWords('ml', word),
   ])
 
-  const result: RhymeSuggestions = { rhymes, nearRhymes, similar }
-  cache.set(word, result)
+  const result: RhymeSuggestions = { rhymes: rhymes ?? [], nearRhymes: nearRhymes ?? [], similar: similar ?? [] }
+  if (rhymes && nearRhymes && similar) cache.set(word, result)
   return result
 }

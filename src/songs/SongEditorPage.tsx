@@ -1,26 +1,26 @@
-import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
 import { useSong } from './useSong'
 import { useSongTags } from './useSongTags'
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback'
+import { useAutosave } from '../hooks/useAutosave'
 import { LyricsEditor } from './LyricsEditor'
 import { SaveIndicator } from './SaveIndicator'
-import type { SaveStatus } from './SaveIndicator'
 import { AudioPanel } from '../audio/AudioPanel'
 import { SongDetailsFields } from './SongDetailsFields'
 import { ChipAutocomplete } from './ChipAutocomplete'
 import { CoverPicker } from './CoverPicker'
-import type { SongStatus } from '../types/database'
+import type { Song, SongStatus } from '../types/database'
 
 export function SongEditorPage() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const { user } = useAuth()
-  const { song, loading, error, saveTitle, saveLyrics, saveFields } = useSong(id)
+  const { song, loading, error, saveTitle, saveLyrics, saveFields, deleteSong } = useSong(id)
   const { tags, allTagNames, addTag, removeTag } = useSongTags(id)
 
   const [title, setTitle] = useState('')
-  const [titleStatus, setTitleStatus] = useState<SaveStatus>('idle')
   const [lyrics, setLyrics] = useState('')
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null)
   const [coverPickerOpen, setCoverPickerOpen] = useState(false)
@@ -49,24 +49,32 @@ export function SongEditorPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [song?.id])
 
-  const debouncedSaveTitle = useDebouncedCallback(async (value: string) => {
-    await saveTitle(value)
-    setTitleStatus('saved')
-    setTimeout(() => setTitleStatus('idle'), 1500)
-  }, 800)
+  const { status: titleStatus, queue: queueTitle } = useAutosave(saveTitle, 800)
 
   function handleTitleChange(value: string) {
     setTitle(value)
-    setTitleStatus('saving')
-    debouncedSaveTitle(value)
+    queueTitle(value)
   }
 
-  const debouncedSaveDetails = useDebouncedCallback(
-    (patch: { mood?: string | null; genre?: string | null; musical_key?: string | null; bpm?: number | null }) => {
-      saveFields(patch)
-    },
-    600,
-  )
+  // Mood/genre/key/bpm share one timer, so edits are merged: typing in Mood then
+  // Genre within 600ms must save both, not just the last one.
+  const pendingDetailsRef = useRef<Partial<Song>>({})
+  const flushDetails = useDebouncedCallback(() => {
+    const patch = pendingDetailsRef.current
+    pendingDetailsRef.current = {}
+    saveFields(patch)
+  }, 600)
+  function debouncedSaveDetails(patch: Partial<Song>) {
+    pendingDetailsRef.current = { ...pendingDetailsRef.current, ...patch }
+    flushDetails()
+  }
+
+  async function handleDelete() {
+    if (!song || !user) return
+    if (!window.confirm(`Delete "${song.title || 'Untitled'}"? This can't be undone.`)) return
+    if (await deleteSong(user.id)) navigate('/')
+    else window.alert("Couldn't delete the song. Check your connection and try again.")
+  }
 
   function handleStatusChange(value: SongStatus) {
     setStatus(value)
@@ -176,9 +184,17 @@ export function SongEditorPage() {
         <LyricsEditor
           content={lyrics}
           onContentChange={setLyrics}
-          onSave={(value) => saveLyrics(value)}
+          onSave={saveLyrics}
         />
       </div>
+
+      <button
+        type="button"
+        onClick={handleDelete}
+        className="mt-8 text-sm text-slate-500 transition hover:text-red-400"
+      >
+        Delete song
+      </button>
     </div>
   )
 }

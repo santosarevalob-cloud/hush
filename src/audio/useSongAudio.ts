@@ -82,6 +82,10 @@ export function useSongAudio(songId: string | undefined, userId: string | undefi
         .single()
 
       if (insertErr || !data) {
+        // Undo: drop the orphaned file and put the previous version back as current.
+        await supabase.storage.from(BUCKET).remove([storagePath])
+        const previous = versions.find((v) => v.is_current)
+        if (previous) await supabase.from('song_audio').update({ is_current: true }).eq('id', previous.id)
         setError(insertErr?.message ?? 'Could not save the uploaded audio')
         return
       }

@@ -133,6 +133,8 @@ export function AudioPanel({ songId, onAudioUploaded }: AudioPanelProps) {
     setViewStart(Math.max(0, Math.min(newViewStart, duration - viewDuration)))
   }
 
+  // Always sends all three values: the timer keeps only the last call, so a
+  // partial patch would drop an edit made to another field within 600ms.
   const debouncedSaveSettings = useDebouncedCallback(
     (patch: { bpm?: number; bars?: number; beatsPerBar?: number }) => {
       updateCurrentSettings(patch)
@@ -142,15 +144,15 @@ export function AudioPanel({ songId, onAudioUploaded }: AudioPanelProps) {
 
   function handleBpmChange(value: number) {
     setBpm(value)
-    debouncedSaveSettings({ bpm: value })
+    debouncedSaveSettings({ bpm: value, bars, beatsPerBar })
   }
   function handleBarsChange(value: number) {
     setBars(value)
-    debouncedSaveSettings({ bars: value })
+    debouncedSaveSettings({ bpm, bars: value, beatsPerBar })
   }
   function handleBeatsPerBarChange(value: number) {
     setBeatsPerBar(value)
-    debouncedSaveSettings({ beatsPerBar: value })
+    debouncedSaveSettings({ bpm, bars, beatsPerBar: value })
   }
 
   function commitDownbeat(value: number) {

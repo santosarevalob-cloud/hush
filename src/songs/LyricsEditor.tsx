@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import type { MouseEvent } from 'react'
-import { useDebouncedCallback } from '../hooks/useDebouncedCallback'
+import { useAutosave } from '../hooks/useAutosave'
 import { RhymePopup } from './RhymePopup'
 import { SaveIndicator } from './SaveIndicator'
-import type { SaveStatus } from './SaveIndicator'
 
 interface WordAtCaret {
   word: string
@@ -63,11 +62,10 @@ function readStoredFontSize(): number {
 interface LyricsEditorProps {
   content: string
   onContentChange: (content: string) => void
-  onSave: (content: string) => void | Promise<void>
+  onSave: (content: string) => Promise<boolean>
 }
 
 export function LyricsEditor({ content, onContentChange, onSave }: LyricsEditorProps) {
-  const [status, setStatus] = useState<SaveStatus>('idle')
   const [popup, setPopup] = useState<{ word: string; start: number; end: number; x: number; y: number } | null>(
     null,
   )
@@ -85,16 +83,11 @@ export function LyricsEditor({ content, onContentChange, onSave }: LyricsEditorP
     })
   }
 
-  const debouncedSave = useDebouncedCallback(async (value: string) => {
-    await onSave(value)
-    setStatus('saved')
-    setTimeout(() => setStatus('idle'), 1500)
-  }, 1000)
+  const { status, queue } = useAutosave(onSave, 1000)
 
   function handleChange(value: string) {
     onContentChange(value)
-    setStatus('saving')
-    debouncedSave(value)
+    queue(value)
   }
 
   function handleClick(event: MouseEvent<HTMLTextAreaElement>) {
