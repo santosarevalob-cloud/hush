@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import type { MouseEvent } from 'react'
+import type { MouseEvent, ReactNode } from 'react'
 import { countLineSyllables } from '../lib/syllables'
 import { RecordMode } from './RecordMode'
 import { useAutosave } from '../hooks/useAutosave'
@@ -76,9 +76,11 @@ interface LyricsEditorProps {
   content: string
   onContentChange: (content: string) => void
   onSave: (content: string) => Promise<boolean>
+  // Rendered beside the lyrics box (desktop) so it lines up with the box, not the toolbar.
+  aside?: ReactNode
 }
 
-export function LyricsEditor({ title, content, onContentChange, onSave }: LyricsEditorProps) {
+export function LyricsEditor({ title, content, onContentChange, onSave, aside }: LyricsEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [popup, setPopup] = useState<{ word: string; start: number; end: number; x: number; y: number } | null>(
     null,
@@ -164,7 +166,7 @@ export function LyricsEditor({ title, content, onContentChange, onSave }: Lyrics
 
   return (
     <div>
-      <div className="mb-2 flex flex-wrap items-center gap-1.5">
+      <div className="mb-2 flex flex-wrap items-center gap-1.5 md:pr-[18.5rem]">
         <button
           type="button"
           onClick={() => adjustFontSize(-2)}
@@ -201,35 +203,38 @@ export function LyricsEditor({ title, content, onContentChange, onSave }: Lyrics
           <SaveIndicator status={status} />
         </span>
       </div>
-      <div className="relative">
-        <textarea
-          ref={textareaRef}
-          value={content}
-          onChange={(e) => handleChange(e.target.value)}
-          onDoubleClick={handleDoubleClick}
-          style={{ fontSize: `${fontSize}px`, lineHeight }}
-          className={`block min-h-[60vh] w-full resize-none overflow-hidden rounded-2xl glass-surface border border-white/10 ${textPadding} text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-accent/50`}
-          placeholder="Write your lyrics here…"
-        />
-        {showSyllables && (
-          // Invisible copy of the text with the same wrapping; only the counts show.
-          <div
-            aria-hidden
-            className={`pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words border border-transparent ${textPadding} text-transparent select-none`}
+      <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_17rem]">
+        <div className="relative">
+          <textarea
+            ref={textareaRef}
+            value={content}
+            onChange={(e) => handleChange(e.target.value)}
+            onDoubleClick={handleDoubleClick}
             style={{ fontSize: `${fontSize}px`, lineHeight }}
-          >
-            {content.split('\n').map((line, i) => (
-              <div key={i} className="relative">
-                {line || ' '}
-                {line.trim() && (
-                  <span className="absolute -right-10 top-0 w-8 text-right text-xs text-slate-500" style={{ lineHeight }}>
-                    {countLineSyllables(line)}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+            className={`block min-h-[60vh] w-full resize-none overflow-hidden rounded-2xl glass-surface border border-white/10 ${textPadding} text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-accent/50`}
+            placeholder="Write your lyrics here…"
+          />
+          {showSyllables && (
+            // Invisible copy of the text with the same wrapping; only the counts show.
+            <div
+              aria-hidden
+              className={`pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words border border-transparent ${textPadding} text-transparent select-none`}
+              style={{ fontSize: `${fontSize}px`, lineHeight }}
+            >
+              {content.split('\n').map((line, i) => (
+                <div key={i} className="relative">
+                  {line || ' '}
+                  {line.trim() && (
+                    <span className="absolute -right-10 top-0 w-8 text-right text-xs text-slate-500" style={{ lineHeight }}>
+                      {countLineSyllables(line)}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        {aside}
       </div>
       {popup && (
         <RhymePopup

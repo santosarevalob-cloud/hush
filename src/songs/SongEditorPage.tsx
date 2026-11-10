@@ -124,68 +124,76 @@ export function SongEditorPage() {
         &larr; All songs
       </Link>
 
-      <div className="mt-3 grid gap-6 md:grid-cols-[minmax(0,1fr)_17rem]">
-        <div className="min-w-0 space-y-4">
-          <div className="flex items-center gap-2">
-            <input
-              value={title}
-              onChange={(e) => handleTitleChange(e.target.value)}
-              aria-label="Song title"
-              placeholder="Untitled"
-              className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-1 py-1 font-serif text-4xl text-slate-100 outline-none transition placeholder:text-slate-500 hover:border-white/10 focus:border-accent/50"
-            />
-            <SaveIndicator status={titleStatus} />
-          </div>
-
-          <LyricsEditor title={title} content={lyrics} onContentChange={setLyrics} onSave={saveLyrics} />
-
-          <AudioPanel songId={song.id} onAudioUploaded={handleAudioUploaded} />
+      {/* Left-column width = page minus the 17rem side column + 1.5rem gap (see LyricsEditor). */}
+      <div className="mt-3 space-y-4 md:pr-[18.5rem]">
+        <div className="flex items-center gap-2">
+          <input
+            value={title}
+            onChange={(e) => handleTitleChange(e.target.value)}
+            aria-label="Song title"
+            placeholder="Untitled"
+            className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-1 py-1 font-serif text-4xl text-slate-100 outline-none transition placeholder:text-slate-500 hover:border-white/10 focus:border-accent/50"
+          />
+          <SaveIndicator status={titleStatus} />
         </div>
+        <BeatPlayer beatUrl={beatUrl} onChange={handleBeatChange} />
+      </div>
 
-        <aside className="space-y-5 md:sticky md:top-20 md:max-h-[calc(100dvh-6rem)] md:self-start md:overflow-y-auto">
-          <button
-            type="button"
-            onClick={() => setCoverPickerOpen(true)}
-            className="block aspect-square w-full overflow-hidden rounded-xl border border-white/10 bg-slate-900 transition hover:border-accent/60 max-md:w-28"
-            aria-label="Change cover"
-          >
-            {coverImageUrl ? (
-              <img src={coverImageUrl} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <span className="flex h-full w-full items-center justify-center text-xs text-slate-500">Add cover</span>
-            )}
-          </button>
+      <div className="mt-4">
+        <LyricsEditor
+          title={title}
+          content={lyrics}
+          onContentChange={setLyrics}
+          onSave={saveLyrics}
+          aside={
+            <aside className="space-y-5 md:sticky md:top-20 md:self-start">
+              <button
+                type="button"
+                onClick={() => setCoverPickerOpen(true)}
+                className="block aspect-square w-full overflow-hidden rounded-xl border border-white/10 bg-slate-900 transition hover:border-accent/60 max-md:w-28"
+                aria-label="Change cover"
+              >
+                {coverImageUrl ? (
+                  <img src={coverImageUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="flex h-full w-full items-center justify-center text-xs text-slate-500">Add cover</span>
+                )}
+              </button>
 
-          <BeatPlayer beatUrl={beatUrl} onChange={handleBeatChange} />
+              <SongDetailsFields
+                status={status}
+                mood={mood}
+                genre={genre}
+                musicalKey={musicalKey}
+                bpm={bpm}
+                onStatusChange={handleStatusChange}
+                onMoodChange={handleMoodChange}
+                onGenreChange={handleGenreChange}
+                onMusicalKeyChange={handleMusicalKeyChange}
+                onBpmChange={handleBpmChange}
+              />
 
-          <SongDetailsFields
-            status={status}
-            mood={mood}
-            genre={genre}
-            musicalKey={musicalKey}
-            bpm={bpm}
-            onStatusChange={handleStatusChange}
-            onMoodChange={handleMoodChange}
-            onGenreChange={handleGenreChange}
-            onMusicalKeyChange={handleMusicalKeyChange}
-            onBpmChange={handleBpmChange}
-          />
+              <ChipAutocomplete
+                selected={tags.map((t) => t.name)}
+                suggestions={allTagNames}
+                onAdd={addTag}
+                onRemove={removeTag}
+                allowCreate
+                placeholder="Add tags…"
+              />
 
-          <ChipAutocomplete
-            selected={tags.map((t) => t.name)}
-            suggestions={allTagNames}
-            onAdd={addTag}
-            onRemove={removeTag}
-            allowCreate
-            placeholder="Add tags…"
-          />
+              {user && <VoiceMemos songId={song.id} userId={user.id} />}
 
-          {user && <VoiceMemos songId={song.id} userId={user.id} />}
+              <button type="button" onClick={handleDelete} className="text-xs text-slate-500 transition hover:text-red-400">
+                Delete song
+              </button>
+            </aside>
+          }
+        />
+      </div>
 
-          <button type="button" onClick={handleDelete} className="text-xs text-slate-500 transition hover:text-red-400">
-            Delete song
-          </button>
-        </aside>
+      <div className="mt-4 md:pr-[18.5rem]">
+        <AudioPanel songId={song.id} onAudioUploaded={handleAudioUploaded} />
       </div>
 
       {coverPickerOpen && (
