@@ -18,6 +18,7 @@ export interface Database {
           musical_key: string | null
           bpm: number | null
           cover_image_url: string | null
+          beat_url: string | null
           created_at: string
           updated_at: string
         }
@@ -32,6 +33,7 @@ export interface Database {
           musical_key?: string | null
           bpm?: number | null
           cover_image_url?: string | null
+          beat_url?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -46,6 +48,7 @@ export interface Database {
           musical_key?: string | null
           bpm?: number | null
           cover_image_url?: string | null
+          beat_url?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -129,6 +132,33 @@ export interface Database {
         }
         Relationships: []
       }
+      song_memos: {
+        Row: {
+          id: string
+          user_id: string
+          song_id: string
+          storage_path: string
+          duration_seconds: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string
+          song_id: string
+          storage_path: string
+          duration_seconds?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          song_id?: string
+          storage_path?: string
+          duration_seconds?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>
@@ -141,3 +171,4 @@ export type Song = Database['public']['Tables']['songs']['Row']
 export type Tag = Database['public']['Tables']['tags']['Row']
 export type SongTag = Database['public']['Tables']['song_tags']['Row']
 export type SongAudio = Database['public']['Tables']['song_audio']['Row']
+export type SongMemo = Database['public']['Tables']['song_memos']['Row']

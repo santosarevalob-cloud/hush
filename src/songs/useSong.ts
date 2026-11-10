@@ -44,11 +44,16 @@ export function useSong(songId: string | undefined) {
   const deleteSong = useCallback(
     async (userId: string): Promise<boolean> => {
       if (!songId) return false
-      const { data: audio } = await supabase.from('song_audio').select('storage_path').eq('song_id', songId)
+      const [{ data: audio }, { data: memos }] = await Promise.all([
+        supabase.from('song_audio').select('storage_path').eq('song_id', songId),
+        supabase.from('song_memos').select('storage_path').eq('song_id', songId),
+      ])
       const { error: err } = await supabase.from('songs').delete().eq('id', songId)
       if (err) return false
       const audioPaths = (audio ?? []).map((a) => a.storage_path)
       if (audioPaths.length > 0) await supabase.storage.from('song-audio').remove(audioPaths)
+      const memoPaths = (memos ?? []).map((m) => m.storage_path)
+      if (memoPaths.length > 0) await supabase.storage.from('song-memos').remove(memoPaths)
       await supabase.storage.from('song-covers').remove([`${userId}/${songId}/cover.jpg`])
       return true
     },

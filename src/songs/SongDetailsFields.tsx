@@ -27,17 +27,21 @@ export function SongDetailsFields({
   onMusicalKeyChange,
   onBpmChange,
 }: SongDetailsFieldsProps) {
+  // Label on the left, borderless value on the right; the field only shows a frame on hover/focus.
   const fieldClass =
-    'w-24 rounded-lg glass-input border border-white/12 px-2 py-1 text-slate-100 outline-none transition focus:border-accent/60 focus:ring-2 focus:ring-accent/15'
+    'w-full min-w-0 rounded-md border border-transparent bg-transparent px-2 py-1 text-right text-sm text-slate-100 outline-none transition placeholder:text-slate-500 hover:border-white/10 focus:border-accent/60'
+  const rowClass = 'grid grid-cols-[4.5rem_minmax(0,1fr)] items-center border-b border-white/8 py-0.5 text-sm'
+  const labelClass = 'text-slate-500'
 
   return (
-    <div className="flex flex-wrap items-center gap-3 text-sm text-slate-300">
-      <label className="flex items-center gap-1">
-        Status
+    <div>
+      <label className={rowClass}>
+        <span className={labelClass}>Status</span>
         <select
           value={status}
           onChange={(e) => onStatusChange(e.target.value as SongStatus)}
-          className={fieldClass}
+          className={`${fieldClass} cursor-pointer text-accent`}
+          style={{ textAlignLast: 'right' }}
         >
           {STATUS_OPTIONS.map((s) => (
             <option key={s} value={s} className="bg-slate-900 text-slate-100">
@@ -46,41 +50,33 @@ export function SongDetailsFields({
           ))}
         </select>
       </label>
-      <label className="flex items-center gap-1">
-        Mood
-        <input
-          value={mood}
-          onChange={(e) => onMoodChange(e.target.value)}
-          placeholder="e.g. happy"
-          className={fieldClass}
-        />
+      <label className={rowClass}>
+        <span className={labelClass}>Mood</span>
+        <input value={mood} onChange={(e) => onMoodChange(e.target.value)} placeholder="happy" className={fieldClass} />
       </label>
-      <label className="flex items-center gap-1">
-        Genre
-        <input
-          value={genre}
-          onChange={(e) => onGenreChange(e.target.value)}
-          placeholder="e.g. pop"
-          className={fieldClass}
-        />
+      <label className={rowClass}>
+        <span className={labelClass}>Genre</span>
+        <input value={genre} onChange={(e) => onGenreChange(e.target.value)} placeholder="pop" className={fieldClass} />
       </label>
-      <label className="flex items-center gap-1">
-        Key
+      <label className={rowClass}>
+        <span className={labelClass}>Key</span>
         <input
           value={musicalKey}
           onChange={(e) => onMusicalKeyChange(e.target.value)}
-          placeholder="e.g. C major"
+          placeholder="C major"
           className={fieldClass}
         />
       </label>
-      <label className="flex items-center gap-1">
-        BPM
+      <label className={rowClass}>
+        <span className={labelClass}>BPM</span>
         <input
           type="number"
           min={1}
+          inputMode="numeric"
           value={bpm}
           onChange={(e) => onBpmChange(e.target.value)}
-          className={`${fieldClass} w-20`}
+          placeholder="120"
+          className={fieldClass}
         />
       </label>
     </div>

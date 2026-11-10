@@ -12,7 +12,7 @@ function AppShell() {
       <header className="glass sticky top-0 z-30 flex items-center justify-between border-b border-white/10 px-4 py-3">
         <h1 className="font-serif text-3xl leading-none italic text-slate-100">hush</h1>
         <div className="flex items-center gap-3 text-sm text-slate-400">
-          <span>{user?.email}</span>
+          <span className="hidden sm:inline">{user?.email}</span>
           <button
             type="button"
             onClick={() => signOut()}

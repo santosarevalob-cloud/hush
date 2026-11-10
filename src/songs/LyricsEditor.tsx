@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import type { MouseEvent } from 'react'
+import { countLineSyllables } from '../lib/syllables'
+import { RecordMode } from './RecordMode'
 import { useAutosave } from '../hooks/useAutosave'
 import { RhymePopup } from './RhymePopup'
 import { SaveIndicator } from './SaveIndicator'
@@ -59,17 +61,31 @@ function readStoredFontSize(): number {
   return DEFAULT_FONT_SIZE
 }
 
+const SYLLABLES_KEY = 'hush:show-syllables'
+
+function readShowSyllables(): boolean {
+  try {
+    return localStorage.getItem(SYLLABLES_KEY) !== 'false'
+  } catch {
+    return true
+  }
+}
+
 interface LyricsEditorProps {
+  title: string
   content: string
   onContentChange: (content: string) => void
   onSave: (content: string) => Promise<boolean>
 }
 
-export function LyricsEditor({ content, onContentChange, onSave }: LyricsEditorProps) {
+export function LyricsEditor({ title, content, onContentChange, onSave }: LyricsEditorProps) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [popup, setPopup] = useState<{ word: string; start: number; end: number; x: number; y: number } | null>(
     null,
   )
   const [fontSize, setFontSize] = useState(readStoredFontSize)
+  const [showSyllables, setShowSyllables] = useState(readShowSyllables)
+  const [recordMode, setRecordMode] = useState(false)
 
   function adjustFontSize(delta: number) {
     setFontSize((prev) => {
@@ -83,6 +99,34 @@ export function LyricsEditor({ content, onContentChange, onSave }: LyricsEditorP
     })
   }
 
+  function toggleSyllables() {
+    setShowSyllables((prev) => {
+      try {
+        localStorage.setItem(SYLLABLES_KEY, String(!prev))
+      } catch {
+        // ignore
+      }
+      return !prev
+    })
+  }
+
+  // Grow the textarea to fit its text, so the page scrolls instead of the box and
+  // the syllable counts (an overlay) stay lined up with each line.
+  useLayoutEffect(() => {
+    const el = textareaRef.current
+    if (!el) return
+    function fit() {
+      if (!el) return
+      const scrollY = window.scrollY
+      el.style.height = 'auto'
+      el.style.height = `${el.scrollHeight}px`
+      window.scrollTo(0, scrollY) // the brief 'auto' height would otherwise jump the page
+    }
+    fit()
+    window.addEventListener('resize', fit)
+    return () => window.removeEventListener('resize', fit)
+  }, [content, fontSize, showSyllables])
+
   const { status, queue } = useAutosave(onSave, 1000)
 
   function handleChange(value: string) {
@@ -90,15 +134,19 @@ export function LyricsEditor({ content, onContentChange, onSave }: LyricsEditorP
     queue(value)
   }
 
-  function handleClick(event: MouseEvent<HTMLTextAreaElement>) {
-    const textarea = event.currentTarget
-    const caret = textarea.selectionStart
-    const found = getWordAtCaret(textarea.value, caret)
-    if (!found) {
-      setPopup(null)
-      return
-    }
-    setPopup({ ...found, x: event.clientX, y: event.clientY })
+  function openRhymesAt(caret: number, x: number, y: number) {
+    const found = getWordAtCaret(content, caret)
+    setPopup(found ? { ...found, x, y } : null)
+  }
+
+  function handleDoubleClick(event: MouseEvent<HTMLTextAreaElement>) {
+    openRhymesAt(event.currentTarget.selectionStart, event.clientX, event.clientY)
+  }
+
+  function handleRhymesButton(event: MouseEvent<HTMLButtonElement>) {
+    const caret = textareaRef.current?.selectionStart ?? 0
+    const rect = event.currentTarget.getBoundingClientRect()
+    openRhymesAt(caret, rect.left + rect.width / 2, rect.bottom)
   }
 
   function handleSelectSuggestion(suggestion: string) {
@@ -109,42 +157,80 @@ export function LyricsEditor({ content, onContentChange, onSave }: LyricsEditorP
     setPopup(null)
   }
 
+  const toolClass =
+    'rounded-lg border border-white/12 px-2.5 py-1 text-xs text-slate-300 transition hover:border-accent/60 hover:text-accent disabled:opacity-30'
+  const textPadding = `px-4 py-4 ${showSyllables ? 'pr-12' : ''}`
+  const lineHeight = `${fontSize * 1.625}px`
+
   return (
     <div>
-      <div className="mb-2 flex items-center justify-between">
-        <div className="flex items-center gap-1">
-          <span className="mr-1 text-xs text-slate-500">Text size</span>
-          <button
-            type="button"
-            onClick={() => adjustFontSize(-2)}
-            disabled={fontSize <= MIN_FONT_SIZE}
-            aria-label="Decrease text size"
-            className="rounded border border-white/12 bg-white/5 px-2 py-0.5 text-xs text-slate-300 transition hover:bg-white/10 disabled:opacity-30"
-          >
-            A−
-          </button>
-          <span className="w-10 text-center text-xs text-slate-400">{fontSize}px</span>
-          <button
-            type="button"
-            onClick={() => adjustFontSize(2)}
-            disabled={fontSize >= MAX_FONT_SIZE}
-            aria-label="Increase text size"
-            className="rounded border border-white/12 bg-white/5 px-2 py-0.5 text-xs text-slate-300 transition hover:bg-white/10 disabled:opacity-30"
-          >
-            A+
-          </button>
-        </div>
-        <SaveIndicator status={status} />
+      <div className="mb-2 flex flex-wrap items-center gap-1.5">
+        <button
+          type="button"
+          onClick={() => adjustFontSize(-2)}
+          disabled={fontSize <= MIN_FONT_SIZE}
+          aria-label="Smaller text"
+          className={toolClass}
+        >
+          A−
+        </button>
+        <button
+          type="button"
+          onClick={() => adjustFontSize(2)}
+          disabled={fontSize >= MAX_FONT_SIZE}
+          aria-label="Bigger text"
+          className={toolClass}
+        >
+          A+
+        </button>
+        <button
+          type="button"
+          onClick={toggleSyllables}
+          aria-pressed={showSyllables}
+          className={`${toolClass} ${showSyllables ? 'border-accent/70 text-accent' : ''}`}
+        >
+          Syllables
+        </button>
+        <button type="button" onClick={handleRhymesButton} className={toolClass} title="Rhymes for the word at your cursor (or double-click a word)">
+          Rhymes
+        </button>
+        <button type="button" onClick={() => setRecordMode(true)} className={toolClass}>
+          Record mode
+        </button>
+        <span className="ml-auto">
+          <SaveIndicator status={status} />
+        </span>
       </div>
-      <textarea
-        value={content}
-        onChange={(e) => handleChange(e.target.value)}
-        onClick={handleClick}
-        rows={20}
-        style={{ fontSize: `${fontSize}px` }}
-        className="w-full resize-y rounded-2xl glass-surface border border-white/10 px-4 py-4 leading-relaxed text-slate-100 shadow-inner shadow-black/30 outline-none transition placeholder:text-slate-500 focus:border-accent/50 focus:ring-2 focus:ring-accent/15"
-        placeholder="Write your lyrics here…"
-      />
+      <div className="relative">
+        <textarea
+          ref={textareaRef}
+          value={content}
+          onChange={(e) => handleChange(e.target.value)}
+          onDoubleClick={handleDoubleClick}
+          style={{ fontSize: `${fontSize}px`, lineHeight }}
+          className={`block min-h-[60vh] w-full resize-none overflow-hidden rounded-2xl glass-surface border border-white/10 ${textPadding} text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-accent/50`}
+          placeholder="Write your lyrics here…"
+        />
+        {showSyllables && (
+          // Invisible copy of the text with the same wrapping; only the counts show.
+          <div
+            aria-hidden
+            className={`pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words border border-transparent ${textPadding} text-transparent select-none`}
+            style={{ fontSize: `${fontSize}px`, lineHeight }}
+          >
+            {content.split('\n').map((line, i) => (
+              <div key={i} className="relative">
+                {line || ' '}
+                {line.trim() && (
+                  <span className="absolute -right-10 top-0 w-8 text-right text-xs text-slate-500" style={{ lineHeight }}>
+                    {countLineSyllables(line)}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
       {popup && (
         <RhymePopup
           word={popup.word}
@@ -154,6 +240,7 @@ export function LyricsEditor({ content, onContentChange, onSave }: LyricsEditorP
           onClose={() => setPopup(null)}
         />
       )}
+      {recordMode && <RecordMode title={title} lyrics={content} onClose={() => setRecordMode(false)} />}
     </div>
   )
 }

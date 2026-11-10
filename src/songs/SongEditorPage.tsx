@@ -11,6 +11,8 @@ import { AudioPanel } from '../audio/AudioPanel'
 import { SongDetailsFields } from './SongDetailsFields'
 import { ChipAutocomplete } from './ChipAutocomplete'
 import { CoverPicker } from './CoverPicker'
+import { BeatPlayer } from './BeatPlayer'
+import { VoiceMemos } from './VoiceMemos'
 import type { Song, SongStatus } from '../types/database'
 
 export function SongEditorPage() {
@@ -23,6 +25,7 @@ export function SongEditorPage() {
   const [title, setTitle] = useState('')
   const [lyrics, setLyrics] = useState('')
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null)
+  const [beatUrl, setBeatUrl] = useState<string | null>(null)
   const [coverPickerOpen, setCoverPickerOpen] = useState(false)
 
   const [status, setStatus] = useState<SongStatus>('idea')
@@ -41,6 +44,7 @@ export function SongEditorPage() {
       setMusicalKey(song.musical_key ?? '')
       setBpm(song.bpm ? String(song.bpm) : '')
       setCoverImageUrl(song.cover_image_url)
+      setBeatUrl(song.beat_url)
     }
     // Only re-sync from the server when a *different* song loads. Depending on
     // `song` itself would re-run this after every debounced save (saveFields
@@ -98,6 +102,11 @@ export function SongEditorPage() {
     debouncedSaveDetails({ bpm: value && parsed > 0 ? parsed : null })
   }
 
+  function handleBeatChange(url: string | null) {
+    setBeatUrl(url)
+    saveFields({ beat_url: url })
+  }
+
   function handleAudioUploaded(audioBpm: number) {
     if (!bpm) {
       setBpm(String(audioBpm))
@@ -110,58 +119,73 @@ export function SongEditorPage() {
   if (!song) return <div className="p-4 text-slate-400">Song not found.</div>
 
   return (
-    <div className="mx-auto max-w-2xl p-4 pb-10">
+    <div className="mx-auto max-w-6xl p-4 pb-16">
       <Link to="/" className="text-sm text-slate-400 transition hover:text-slate-100">
         &larr; All songs
       </Link>
 
-      <div className="mt-3 space-y-4 rounded-2xl glass border border-white/10 p-4 shadow-lg shadow-black/20">
-        <div className="flex items-center gap-3">
+      <div className="mt-3 grid gap-6 md:grid-cols-[minmax(0,1fr)_17rem]">
+        <div className="min-w-0 space-y-4">
+          <div className="flex items-center gap-2">
+            <input
+              value={title}
+              onChange={(e) => handleTitleChange(e.target.value)}
+              aria-label="Song title"
+              placeholder="Untitled"
+              className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-1 py-1 font-serif text-4xl text-slate-100 outline-none transition placeholder:text-slate-500 hover:border-white/10 focus:border-accent/50"
+            />
+            <SaveIndicator status={titleStatus} />
+          </div>
+
+          <LyricsEditor title={title} content={lyrics} onContentChange={setLyrics} onSave={saveLyrics} />
+
+          <AudioPanel songId={song.id} onAudioUploaded={handleAudioUploaded} />
+        </div>
+
+        <aside className="space-y-5 md:sticky md:top-20 md:max-h-[calc(100dvh-6rem)] md:self-start md:overflow-y-auto">
           <button
             type="button"
             onClick={() => setCoverPickerOpen(true)}
-            className="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-white/12 bg-white/5 transition hover:border-accent/60"
+            className="block aspect-square w-full overflow-hidden rounded-xl border border-white/10 bg-slate-900 transition hover:border-accent/60 max-md:w-28"
             aria-label="Change cover"
           >
             {coverImageUrl ? (
               <img src={coverImageUrl} alt="" className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-xs text-slate-500">
-                + Cover
-              </div>
+              <span className="flex h-full w-full items-center justify-center text-xs text-slate-500">Add cover</span>
             )}
           </button>
-          <div className="flex flex-1 items-center gap-2">
-            <input
-              value={title}
-              onChange={(e) => handleTitleChange(e.target.value)}
-              className="w-full rounded-lg glass-input border border-white/12 px-3 py-2 font-serif text-2xl text-slate-100 outline-none transition focus:border-accent/60 focus:ring-2 focus:ring-accent/15"
-            />
-            <SaveIndicator status={titleStatus} />
-          </div>
-        </div>
 
-        <SongDetailsFields
-          status={status}
-          mood={mood}
-          genre={genre}
-          musicalKey={musicalKey}
-          bpm={bpm}
-          onStatusChange={handleStatusChange}
-          onMoodChange={handleMoodChange}
-          onGenreChange={handleGenreChange}
-          onMusicalKeyChange={handleMusicalKeyChange}
-          onBpmChange={handleBpmChange}
-        />
+          <BeatPlayer beatUrl={beatUrl} onChange={handleBeatChange} />
 
-        <ChipAutocomplete
-          selected={tags.map((t) => t.name)}
-          suggestions={allTagNames}
-          onAdd={addTag}
-          onRemove={removeTag}
-          allowCreate
-          placeholder="Add tags…"
-        />
+          <SongDetailsFields
+            status={status}
+            mood={mood}
+            genre={genre}
+            musicalKey={musicalKey}
+            bpm={bpm}
+            onStatusChange={handleStatusChange}
+            onMoodChange={handleMoodChange}
+            onGenreChange={handleGenreChange}
+            onMusicalKeyChange={handleMusicalKeyChange}
+            onBpmChange={handleBpmChange}
+          />
+
+          <ChipAutocomplete
+            selected={tags.map((t) => t.name)}
+            suggestions={allTagNames}
+            onAdd={addTag}
+            onRemove={removeTag}
+            allowCreate
+            placeholder="Add tags…"
+          />
+
+          {user && <VoiceMemos songId={song.id} userId={user.id} />}
+
+          <button type="button" onClick={handleDelete} className="text-xs text-slate-500 transition hover:text-red-400">
+            Delete song
+          </button>
+        </aside>
       </div>
 
       {coverPickerOpen && (
@@ -175,26 +199,6 @@ export function SongEditorPage() {
           }}
         />
       )}
-
-      <div className="mt-4">
-        <AudioPanel songId={song.id} onAudioUploaded={handleAudioUploaded} />
-      </div>
-
-      <div className="mt-4">
-        <LyricsEditor
-          content={lyrics}
-          onContentChange={setLyrics}
-          onSave={saveLyrics}
-        />
-      </div>
-
-      <button
-        type="button"
-        onClick={handleDelete}
-        className="mt-8 text-sm text-slate-500 transition hover:text-red-400"
-      >
-        Delete song
-      </button>
     </div>
   )
 }
