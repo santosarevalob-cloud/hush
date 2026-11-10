@@ -28,7 +28,7 @@ export function SongDetailsFields({
   onBpmChange,
 }: SongDetailsFieldsProps) {
   const fieldClass =
-    'w-24 rounded-lg glass-input border border-white/12 px-2 py-1 text-slate-100 outline-none transition focus:border-fuchsia-400/60 focus:ring-2 focus:ring-fuchsia-400/15'
+    'w-24 rounded-lg glass-input border border-white/12 px-2 py-1 text-slate-100 outline-none transition focus:border-accent/60 focus:ring-2 focus:ring-accent/15'
 
   return (
     <div className="flex flex-wrap items-center gap-3 text-sm text-slate-300">

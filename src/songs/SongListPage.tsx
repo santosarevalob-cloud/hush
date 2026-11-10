@@ -97,18 +97,18 @@ export function SongListPage() {
   }
 
   const selectClass =
-    'rounded-lg glass-input border border-white/12 px-2 py-1 text-sm text-slate-200 outline-none transition focus:border-fuchsia-400/60'
+    'rounded-lg glass-input border border-white/12 px-2 py-1 text-sm text-slate-200 outline-none transition focus:border-accent/60'
   const optionClass = 'bg-slate-900 text-slate-100'
 
   return (
     <div className="mx-auto max-w-4xl p-4">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-100">Your songs</h2>
+        <h2 className="font-serif text-2xl text-slate-100">Your songs</h2>
         <button
           type="button"
           onClick={handleNewSong}
           disabled={creating}
-          className="rounded-lg bg-fuchsia-500 px-3 py-2 font-medium text-slate-950 shadow-lg shadow-fuchsia-500/25 transition hover:bg-fuchsia-400 disabled:opacity-60"
+          className="rounded-lg bg-accent px-3 py-2 font-medium text-slate-950 transition hover:brightness-110 disabled:opacity-60"
         >
           {creating ? 'Creating…' : '+ New Song'}
         </button>
@@ -119,7 +119,7 @@ export function SongListPage() {
           value={titleQuery}
           onChange={(e) => setTitleQuery(e.target.value)}
           placeholder="Search by title…"
-          className="w-full rounded-lg glass-input border border-white/12 px-3 py-2 text-slate-100 outline-none transition focus:border-fuchsia-400/60 focus:ring-2 focus:ring-fuchsia-400/15"
+          className="w-full rounded-lg glass-input border border-white/12 px-3 py-2 text-slate-100 outline-none transition focus:border-accent/60 focus:ring-2 focus:ring-accent/15"
         />
 
         <div className="flex items-center gap-2">
@@ -138,14 +138,14 @@ export function SongListPage() {
               <button
                 type="button"
                 onClick={() => setTagMode('AND')}
-                className={`px-2 py-1 transition ${tagMode === 'AND' ? 'bg-fuchsia-500 text-slate-950' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}
+                className={`px-2 py-1 transition ${tagMode === 'AND' ? 'bg-accent text-slate-950' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}
               >
                 Has all
               </button>
               <button
                 type="button"
                 onClick={() => setTagMode('OR')}
-                className={`px-2 py-1 transition ${tagMode === 'OR' ? 'bg-fuchsia-500 text-slate-950' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}
+                className={`px-2 py-1 transition ${tagMode === 'OR' ? 'bg-accent text-slate-950' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}
               >
                 Has any
               </button>
@@ -191,14 +191,14 @@ export function SongListPage() {
             value={bpmMin}
             onChange={(e) => setBpmMin(e.target.value)}
             placeholder="BPM min"
-            className="w-24 rounded-lg glass-input border border-white/12 px-2 py-1 text-sm text-slate-200 outline-none transition focus:border-fuchsia-400/60"
+            className="w-24 rounded-lg glass-input border border-white/12 px-2 py-1 text-sm text-slate-200 outline-none transition focus:border-accent/60"
           />
           <input
             type="number"
             value={bpmMax}
             onChange={(e) => setBpmMax(e.target.value)}
             placeholder="BPM max"
-            className="w-24 rounded-lg glass-input border border-white/12 px-2 py-1 text-sm text-slate-200 outline-none transition focus:border-fuchsia-400/60"
+            className="w-24 rounded-lg glass-input border border-white/12 px-2 py-1 text-sm text-slate-200 outline-none transition focus:border-accent/60"
           />
         </div>
       </div>

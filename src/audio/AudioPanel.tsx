@@ -325,7 +325,7 @@ export function AudioPanel({ songId, onAudioUploaded }: AudioPanelProps) {
                 min={1}
                 value={bpm}
                 onChange={(e) => handleBpmChange(Number(e.target.value) || 0)}
-                className="w-20 rounded-lg glass-input border border-white/12 px-2 py-1 outline-none transition focus:border-fuchsia-400/60"
+                className="w-20 rounded-lg glass-input border border-white/12 px-2 py-1 outline-none transition focus:border-accent/60"
               />
             </label>
             <label className="flex items-center gap-1">
@@ -343,7 +343,7 @@ export function AudioPanel({ songId, onAudioUploaded }: AudioPanelProps) {
                 min={1}
                 value={bars}
                 onChange={(e) => handleBarsChange(Number(e.target.value) || 1)}
-                className="w-14 rounded-lg glass-input border border-white/12 px-2 py-1 text-center outline-none transition focus:border-fuchsia-400/60"
+                className="w-14 rounded-lg glass-input border border-white/12 px-2 py-1 text-center outline-none transition focus:border-accent/60"
               />
               <button
                 type="button"
@@ -361,7 +361,7 @@ export function AudioPanel({ songId, onAudioUploaded }: AudioPanelProps) {
                 min={1}
                 value={beatsPerBar}
                 onChange={(e) => handleBeatsPerBarChange(Number(e.target.value) || 1)}
-                className="w-16 rounded-lg glass-input border border-white/12 px-2 py-1 outline-none transition focus:border-fuchsia-400/60"
+                className="w-16 rounded-lg glass-input border border-white/12 px-2 py-1 outline-none transition focus:border-accent/60"
               />
             </label>
           </div>
@@ -371,7 +371,7 @@ export function AudioPanel({ songId, onAudioUploaded }: AudioPanelProps) {
               type="button"
               onClick={isPlaying ? stopPlayback : handlePlay}
               disabled={!buffer}
-              className="rounded-lg bg-fuchsia-500 px-3 py-1.5 font-medium text-slate-950 shadow-lg shadow-fuchsia-500/25 transition hover:bg-fuchsia-400 disabled:opacity-60"
+              className="rounded-lg bg-accent px-3 py-1.5 font-medium text-slate-950 transition hover:brightness-110 disabled:opacity-60"
             >
               {isPlaying ? 'Pause' : 'Play'}
             </button>
@@ -380,7 +380,7 @@ export function AudioPanel({ songId, onAudioUploaded }: AudioPanelProps) {
                 type="checkbox"
                 checked={loopEnabled}
                 onChange={(e) => setLoopEnabled(e.target.checked)}
-                className="accent-fuchsia-500"
+                className="accent-accent"
               />
               Loop
             </label>

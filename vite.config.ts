@@ -15,11 +15,11 @@ export default defineConfig(({ command }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon-180.png'],
       manifest: {
-        name: 'Songwriting',
-        short_name: 'Songwriting',
-        description: 'Personal songwriting notebook: lyrics, rhymes, and BPM-locked loops.',
-        theme_color: '#05060f',
-        background_color: '#05060f',
+        name: 'Hush',
+        short_name: 'Hush',
+        description: 'A quiet notebook for lyrics, rhymes, and beats.',
+        theme_color: '#0f1217',
+        background_color: '#0f1217',
         display: 'standalone',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },

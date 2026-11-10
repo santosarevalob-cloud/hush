@@ -142,7 +142,7 @@ export function LyricsEditor({ content, onContentChange, onSave }: LyricsEditorP
         onClick={handleClick}
         rows={20}
         style={{ fontSize: `${fontSize}px` }}
-        className="w-full resize-y rounded-2xl glass-surface border border-white/10 px-4 py-4 leading-relaxed text-slate-100 shadow-inner shadow-black/30 outline-none transition placeholder:text-slate-500 focus:border-fuchsia-400/50 focus:ring-2 focus:ring-fuchsia-400/15"
+        className="w-full resize-y rounded-2xl glass-surface border border-white/10 px-4 py-4 leading-relaxed text-slate-100 shadow-inner shadow-black/30 outline-none transition placeholder:text-slate-500 focus:border-accent/50 focus:ring-2 focus:ring-accent/15"
         placeholder="Write your lyrics here…"
       />
       {popup && (

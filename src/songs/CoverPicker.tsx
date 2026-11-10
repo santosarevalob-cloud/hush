@@ -98,14 +98,14 @@ export function CoverPicker({ songId, userId, onClose, onSaved }: CoverPickerPro
               <button
                 type="button"
                 onClick={() => setTab('pexels')}
-                className={`flex-1 rounded px-2 py-1 transition ${tab === 'pexels' ? 'bg-fuchsia-500 text-slate-950' : 'text-slate-300 hover:bg-white/10'}`}
+                className={`flex-1 rounded px-2 py-1 transition ${tab === 'pexels' ? 'bg-accent text-slate-950' : 'text-slate-300 hover:bg-white/10'}`}
               >
                 Search Pexels
               </button>
               <button
                 type="button"
                 onClick={() => setTab('upload')}
-                className={`flex-1 rounded px-2 py-1 transition ${tab === 'upload' ? 'bg-fuchsia-500 text-slate-950' : 'text-slate-300 hover:bg-white/10'}`}
+                className={`flex-1 rounded px-2 py-1 transition ${tab === 'upload' ? 'bg-accent text-slate-950' : 'text-slate-300 hover:bg-white/10'}`}
               >
                 Upload
               </button>
@@ -118,12 +118,12 @@ export function CoverPicker({ songId, userId, onClose, onSaved }: CoverPickerPro
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search photos…"
-                    className="flex-1 rounded-lg glass-input border border-white/12 px-3 py-2 text-slate-100 outline-none transition focus:border-fuchsia-400/60 focus:ring-2 focus:ring-fuchsia-400/15"
+                    className="flex-1 rounded-lg glass-input border border-white/12 px-3 py-2 text-slate-100 outline-none transition focus:border-accent/60 focus:ring-2 focus:ring-accent/15"
                   />
                   <button
                     type="submit"
                     disabled={searching}
-                    className="rounded-lg bg-fuchsia-500 px-3 py-2 text-sm font-medium text-slate-950 shadow-lg shadow-fuchsia-500/25 transition hover:bg-fuchsia-400 disabled:opacity-60"
+                    className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-slate-950 transition hover:brightness-110 disabled:opacity-60"
                   >
                     {searching ? 'Searching…' : 'Search'}
                   </button>
@@ -144,7 +144,7 @@ export function CoverPicker({ songId, userId, onClose, onSaved }: CoverPickerPro
                       key={photo.id}
                       type="button"
                       onClick={() => setSelectedImageSrc(photo.src.large2x)}
-                      className="aspect-square overflow-hidden rounded-lg border border-white/12 transition hover:border-fuchsia-400/60"
+                      className="aspect-square overflow-hidden rounded-lg border border-white/12 transition hover:border-accent/60"
                     >
                       <img
                         src={photo.src.medium}
@@ -171,7 +171,7 @@ export function CoverPicker({ songId, userId, onClose, onSaved }: CoverPickerPro
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full rounded-lg border border-dashed border-white/20 py-8 text-sm text-slate-400 transition hover:border-fuchsia-400/60 hover:text-slate-200"
+                  className="w-full rounded-lg border border-dashed border-white/20 py-8 text-sm text-slate-400 transition hover:border-accent/60 hover:text-slate-200"
                 >
                   Click to choose an image from your device
                 </button>

@@ -31,7 +31,7 @@ function WordList({
             key={w.word}
             type="button"
             onClick={() => onSelect(w.word)}
-            className="rounded-full border border-white/10 bg-white/10 px-2 py-0.5 text-sm text-slate-200 transition hover:border-fuchsia-400 hover:bg-fuchsia-500 hover:text-slate-950"
+            className="rounded-full border border-white/10 bg-white/10 px-2 py-0.5 text-sm text-slate-200 transition hover:border-accent hover:bg-accent hover:text-slate-950"
           >
             {w.word}
           </button>

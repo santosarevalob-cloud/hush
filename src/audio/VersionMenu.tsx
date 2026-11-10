@@ -41,7 +41,7 @@ export function VersionMenu({ versions, onPreview, onRestore, onDelete }: Versio
                     <div className="text-sm text-slate-200">
                       v{version.version_number}
                       {version.is_current && (
-                        <span className="ml-1 text-xs text-fuchsia-400">(current)</span>
+                        <span className="ml-1 text-xs text-accent">(current)</span>
                       )}
                     </div>
                     <div className="text-xs text-slate-500">

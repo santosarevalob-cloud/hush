@@ -10,7 +10,7 @@ function AppShell() {
   return (
     <div className="min-h-dvh text-slate-100">
       <header className="glass sticky top-0 z-30 flex items-center justify-between border-b border-white/10 px-4 py-3">
-        <h1 className="text-lg font-semibold tracking-tight text-slate-100">Songwriting</h1>
+        <h1 className="font-serif text-3xl leading-none italic text-slate-100">hush</h1>
         <div className="flex items-center gap-3 text-sm text-slate-400">
           <span>{user?.email}</span>
           <button

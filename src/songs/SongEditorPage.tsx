@@ -120,7 +120,7 @@ export function SongEditorPage() {
           <button
             type="button"
             onClick={() => setCoverPickerOpen(true)}
-            className="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-white/12 bg-white/5 transition hover:border-fuchsia-400/60"
+            className="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-white/12 bg-white/5 transition hover:border-accent/60"
             aria-label="Change cover"
           >
             {coverImageUrl ? (
@@ -135,7 +135,7 @@ export function SongEditorPage() {
             <input
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
-              className="w-full rounded-lg glass-input border border-white/12 px-3 py-2 text-xl font-semibold text-slate-100 outline-none transition focus:border-fuchsia-400/60 focus:ring-2 focus:ring-fuchsia-400/15"
+              className="w-full rounded-lg glass-input border border-white/12 px-3 py-2 font-serif text-2xl text-slate-100 outline-none transition focus:border-accent/60 focus:ring-2 focus:ring-accent/15"
             />
             <SaveIndicator status={titleStatus} />
           </div>

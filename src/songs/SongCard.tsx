@@ -11,7 +11,7 @@ export function SongCard({ song, tagNames, onClick }: SongCardProps) {
     <button
       type="button"
       onClick={onClick}
-      className="group flex flex-col overflow-hidden rounded-2xl glass border border-white/10 text-left shadow-lg shadow-black/20 transition hover:-translate-y-0.5 hover:border-fuchsia-400/50 hover:shadow-xl hover:shadow-fuchsia-500/10"
+      className="group flex flex-col overflow-hidden rounded-2xl glass border border-white/10 text-left shadow-lg shadow-black/20 transition hover:-translate-y-0.5 hover:border-accent/50"
     >
       <div className="aspect-square w-full bg-white/5">
         {song.cover_image_url ? (
@@ -35,7 +35,7 @@ export function SongCard({ song, tagNames, onClick }: SongCardProps) {
         )}
       </div>
       <div className="p-3">
-        <div className="truncate font-medium text-slate-100">{song.title || 'Untitled'}</div>
+        <div className="truncate font-serif text-lg text-slate-100">{song.title || 'Untitled'}</div>
         <div className="text-xs text-slate-400">{song.status}</div>
         {tagNames.length > 0 && (
           <div className="mt-1.5 flex flex-wrap gap-1">

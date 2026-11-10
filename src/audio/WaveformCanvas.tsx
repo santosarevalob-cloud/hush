@@ -39,20 +39,20 @@ export function WaveformCanvas({
     const clampX = (x: number) => Math.max(0, Math.min(CANVAS_WIDTH, x))
 
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-    ctx.fillStyle = '#0a0c18'
+    ctx.fillStyle = '#0f1217'
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
 
     if (loopEnd !== null) {
       const startX = clampX(timeToX(downbeatOffset))
       const endX = clampX(timeToX(loopEnd))
       if (endX > startX) {
-        ctx.fillStyle = 'rgba(232, 121, 249, 0.15)'
+        ctx.fillStyle = 'rgba(123, 134, 255, 0.12)'
         ctx.fillRect(startX, 0, endX - startX, CANVAS_HEIGHT)
       }
     }
 
     const mid = CANVAS_HEIGHT / 2
-    ctx.fillStyle = '#94a3b8'
+    ctx.fillStyle = '#8a94a3'
     const barWidth = CANVAS_WIDTH / peaks.length
     peaks.forEach((peak, i) => {
       const x = i * barWidth
@@ -61,7 +61,7 @@ export function WaveformCanvas({
       ctx.fillRect(x, Math.min(yTop, yBottom), Math.max(barWidth, 1), Math.max(Math.abs(yBottom - yTop), 1))
     })
 
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.55)'
+    ctx.strokeStyle = 'rgba(217, 222, 230, 0.22)'
     ctx.lineWidth = 1
     barLines.forEach((t) => {
       const x = timeToX(t)
@@ -74,7 +74,7 @@ export function WaveformCanvas({
 
     const markerX = timeToX(downbeatOffset)
     if (markerX >= 0 && markerX <= CANVAS_WIDTH) {
-      ctx.strokeStyle = '#e879f9'
+      ctx.strokeStyle = '#7b86ff'
       ctx.lineWidth = 2
       ctx.beginPath()
       ctx.moveTo(markerX, 0)
@@ -85,7 +85,7 @@ export function WaveformCanvas({
     if (loopEnd !== null) {
       const endX = timeToX(loopEnd)
       if (endX >= 0 && endX <= CANVAS_WIDTH) {
-        ctx.strokeStyle = 'rgba(232, 121, 249, 0.6)'
+        ctx.strokeStyle = 'rgba(123, 134, 255, 0.6)'
         ctx.beginPath()
         ctx.moveTo(endX, 0)
         ctx.lineTo(endX, CANVAS_HEIGHT)
@@ -96,7 +96,7 @@ export function WaveformCanvas({
     if (playheadTime !== null) {
       const x = timeToX(playheadTime)
       if (x >= 0 && x <= CANVAS_WIDTH) {
-        ctx.strokeStyle = '#22d3ee'
+        ctx.strokeStyle = '#d9dee6'
         ctx.lineWidth = 2
         ctx.beginPath()
         ctx.moveTo(x, 0)

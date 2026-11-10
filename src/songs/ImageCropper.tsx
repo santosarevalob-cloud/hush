@@ -80,7 +80,7 @@ export function ImageCropper({ imageSrc, onConfirm, onCancel }: ImageCropperProp
           type="button"
           onClick={handleConfirm}
           disabled={!croppedAreaPixels || saving}
-          className="rounded-lg bg-fuchsia-500 px-3 py-1.5 text-sm font-medium text-slate-950 shadow-lg shadow-fuchsia-500/25 transition hover:bg-fuchsia-400 disabled:opacity-60"
+          className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-slate-950 transition hover:brightness-110 disabled:opacity-60"
         >
           {saving ? 'Saving…' : 'Use this crop'}
         </button>

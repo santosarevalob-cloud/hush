@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+/* Hush brand. Dark only, one accent (blue). The slate scale is remapped to the Hush
+   neutrals so every existing slate-* class picks up the brand without per-file edits. */
+@theme {
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+
+  --color-accent: #7b86ff;
+
+  --color-slate-100: #d9dee6;
+  --color-slate-200: #c9cfd9;
+  --color-slate-300: #aab2bf;
+  --color-slate-400: #8a94a3;
+  --color-slate-500: #6b7584;
+  --color-slate-900: #171c23;
+  --color-slate-950: #0f1217;
+}
+
 :root {
   color-scheme: dark;
 }
@@ -10,50 +27,32 @@ html {
 
 body {
   min-height: 100dvh;
-  background-color: #05060f;
-  background-image:
-    radial-gradient(ellipse 900px 550px at 8% -8%, rgba(217, 70, 239, 0.32), transparent 60%),
-    radial-gradient(ellipse 700px 550px at 100% 0%, rgba(99, 102, 241, 0.26), transparent 60%),
-    radial-gradient(ellipse 900px 700px at 10% 100%, rgba(34, 211, 238, 0.14), transparent 60%),
-    radial-gradient(ellipse 700px 600px at 100% 100%, rgba(232, 121, 249, 0.16), transparent 55%);
-  background-repeat: no-repeat;
+  background-color: #0f1217;
 }
 
-/* Frosted-glass chrome: panels, cards, headers. Content sits on top, so no border here —
-   apply border-white/10 (or similar) alongside for full control over hover states. */
+/* Surface utilities (names kept from the old glass theme to avoid touching every file). */
+
+/* Raised chrome: header, panels, cards. Pair with a border-white/NN class. */
 @utility glass {
-  background-color: rgb(255 255 255 / 0.055);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  background-color: #171c23;
 }
 
-/* Same, but brighter/more opaque — for modals and popovers that float above other glass. */
+/* Modals over a dimmed backdrop. */
 @utility glass-strong {
-  background-color: rgb(255 255 255 / 0.09);
-  backdrop-filter: blur(28px) saturate(150%);
-  -webkit-backdrop-filter: blur(28px) saturate(150%);
+  background-color: #1b212a;
 }
 
-/* Higher-opacity dark glass for the main writing surface — keeps text contrast high while
-   still reading as glass (frosted edge, soft border) instead of a flat opaque box. */
+/* The lyrics writing surface: slightly deeper than panels so the text sits on calm ground. */
 @utility glass-surface {
-  background-color: rgb(8 10 22 / 0.7);
-  backdrop-filter: blur(28px) saturate(130%);
-  -webkit-backdrop-filter: blur(28px) saturate(130%);
+  background-color: #13171d;
 }
 
 /* Form controls: inputs, selects. */
 @utility glass-input {
-  background-color: rgb(255 255 255 / 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background-color: #0f1217;
 }
 
-/* Near-opaque glass for floating menus that sit over busy content (dropdown suggestion
-   lists, popovers) — glass-strong's translucency reads as "see-through" once there's
-   colorful UI directly behind it, so these get just enough frost to still feel like glass. */
+/* Floating menus (rhyme popup, tag suggestions, version menu). */
 @utility glass-solid {
-  background-color: rgb(8 10 22 / 0.94);
-  backdrop-filter: blur(24px) saturate(130%);
-  -webkit-backdrop-filter: blur(24px) saturate(130%);
+  background-color: #1b212a;
 }
