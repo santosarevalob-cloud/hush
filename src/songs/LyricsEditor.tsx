@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import type { MouseEvent, ReactNode } from 'react'
 import { countLineSyllables } from '../lib/syllables'
+import { endRhymeKeys, rhymeKey, splitLastWord } from '../lib/rhymes'
 import { RecordMode } from './RecordMode'
 import { useAutosave } from '../hooks/useAutosave'
 import { RhymePopup } from './RhymePopup'
@@ -163,6 +164,8 @@ export function LyricsEditor({ title, content, onContentChange, onSave, aside }:
     'rounded-lg border border-white/12 px-2.5 py-1 text-xs text-slate-300 transition hover:border-accent/60 hover:text-accent disabled:opacity-30'
   const textPadding = `px-4 py-4 ${showSyllables ? 'pr-12' : ''}`
   const lineHeight = `${fontSize * 1.625}px`
+  const lines = content.split('\n')
+  const rhymingKeys = endRhymeKeys(lines)
 
   return (
     <div>
@@ -211,28 +214,40 @@ export function LyricsEditor({ title, content, onContentChange, onSave, aside }:
             onChange={(e) => handleChange(e.target.value)}
             onDoubleClick={handleDoubleClick}
             style={{ fontSize: `${fontSize}px`, lineHeight }}
-            className={`block min-h-[60vh] w-full resize-none overflow-hidden rounded-2xl glass-surface border border-white/10 ${textPadding} text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-accent/50`}
+            // Text is transparent here; the overlay below draws it (so rhymes can be colored).
+            className={`block min-h-[60vh] w-full resize-none overflow-hidden rounded-2xl glass-surface border border-white/10 ${textPadding} text-transparent caret-slate-100 selection:bg-accent/30 outline-none transition placeholder:text-slate-500 focus:border-accent/50`}
             placeholder="Write your lyrics here…"
           />
-          {showSyllables && (
-            // Invisible copy of the text with the same wrapping; only the counts show.
-            <div
-              aria-hidden
-              className={`pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words border border-transparent ${textPadding} text-transparent select-none`}
-              style={{ fontSize: `${fontSize}px`, lineHeight }}
-            >
-              {content.split('\n').map((line, i) => (
+          {/* Overlay: same text, same wrapping as the textarea, drawn on top of it.
+              Colors end-of-line rhymes and holds the syllable counts. */}
+          <div
+            aria-hidden
+            className={`pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words border border-transparent ${textPadding} text-slate-100 select-none`}
+            style={{ fontSize: `${fontSize}px`, lineHeight }}
+          >
+            {lines.map((line, i) => {
+              const last = splitLastWord(line)
+              const rhymes = last && rhymingKeys.has(rhymeKey(last.word))
+              return (
                 <div key={i} className="relative">
-                  {line || ' '}
-                  {line.trim() && (
+                  {rhymes ? (
+                    <>
+                      {last.before}
+                      <span className="text-accent">{last.word}</span>
+                      {last.after}
+                    </>
+                  ) : (
+                    line || ' '
+                  )}
+                  {showSyllables && line.trim() && (
                     <span className="absolute -right-10 top-0 w-8 text-right text-xs text-slate-500" style={{ lineHeight }}>
                       {countLineSyllables(line)}
                     </span>
                   )}
                 </div>
-              ))}
-            </div>
-          )}
+              )
+            })}
+          </div>
         </div>
         {aside}
       </div>

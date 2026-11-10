@@ -30,6 +30,17 @@ body {
   background-color: #0f1217;
 }
 
+/* No spinner arrows on number fields (BPM etc.); typing and arrow keys still work. */
+input[type='number'] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 /* Surface utilities (names kept from the old glass theme to avoid touching every file). */
 
 /* Raised chrome: header, panels, cards. Pair with a border-white/NN class. */

@@ -45,8 +45,8 @@ export function BeatPlayer({ beatUrl, onChange }: BeatPlayerProps) {
     const linkClass = 'text-xs text-slate-500 transition hover:text-accent'
     return (
       <div>
-        {/* Wide and short on desktop so YouTube shows its full control bar (long seek bar). */}
-        <div className="aspect-video overflow-hidden rounded-xl border border-white/10 bg-black md:aspect-auto md:h-52">
+        {/* Wide on desktop so YouTube shows its full control bar (long seek bar). */}
+        <div className="aspect-video overflow-hidden rounded-xl border border-white/10 bg-black md:aspect-auto md:h-80">
           {/* playlist=<id> is what makes loop=1 work for a single video */}
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${videoId}?loop=1&playlist=${videoId}&playsinline=1&rel=0`}

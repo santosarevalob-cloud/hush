@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict'
 import { countLineSyllables, countSyllables } from '../src/lib/syllables.ts'
 import { parseYouTubeId } from '../src/lib/youtube.ts'
+import { endRhymeKeys, rhymeKey } from '../src/lib/rhymes.ts'
 
 const words: Record<string, number> = {
   the: 1, night: 1, wrote: 1, floats: 1, notes: 1, through: 1, "I'm": 1,
@@ -29,3 +30,16 @@ for (const link of [
 for (const bad of ['', 'not a link', 'https://vimeo.com/123', `https://evil.com/watch?v=${id}`, 'https://youtu.be/short'])
   assert.equal(parseYouTubeId(bad), null, bad)
 console.log('youtube: ok')
+
+const rhymes: [string, string][] = [
+  ['night', 'twilight'], ['wrote', 'floats'], ['floats', 'notes'], ['day', 'they'], ['bite', 'night'],
+  ['cat', 'hat'], ['free', 'tree'],
+]
+const notRhymes: [string, string][] = [['night', 'day'], ['cat', 'cut'], ['wrote', 'what']]
+for (const [a, b] of rhymes) assert.equal(rhymeKey(a), rhymeKey(b), `${a}/${b}`)
+for (const [a, b] of notRhymes) assert.notEqual(rhymeKey(a), rhymeKey(b), `${a}/${b}`)
+assert.equal(rhymeKey(''), '')
+const keys = endRhymeKeys(['Driving through the night', 'Chasing every twilight,', 'Not impressing anything', ''])
+assert.equal(keys.size, 1)
+assert.ok(keys.has(rhymeKey('night')))
+console.log('rhymes: ok')
